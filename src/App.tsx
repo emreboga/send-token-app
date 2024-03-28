@@ -17,7 +17,6 @@ function App() {
   const {
     data: hash,
     error,
-    isError,
     sendTransaction,
     isPending,
   } = useSendTransaction();
@@ -110,7 +109,7 @@ function App() {
                 const balanceEtherVal = formatEther(addressBalance.value);
                 if (!!targetAmount && balanceEtherVal < targetAmount) {
                   setAmountError(
-                    'Amount cannot be more than the account balance'
+                    'Insufficient balance'
                   );
                 } else {
                   setAmountError('');
@@ -138,12 +137,18 @@ function App() {
         <div style={{ height: '20px', color: 'red' }}>{amountError}</div>
       </div>
       <div style={{ marginTop: '20px', width: '100%' }}>
-        <button style={{ width: '100%' }} disabled={isPending} onClick={onSend}>
+        <button
+          data-testId="sendBtn"
+          style={{ width: '100%' }}
+          disabled={isPending || !account.address || !address || !amount || !!addressError || !!amountError}
+          onClick={onSend}
+        >
           {isPending ? 'Sending...' : 'Send'}
         </button>
       </div>
       {account.isConnected ? <Account /> : <WalletOptions />}
-      <div>{isError ? error.message : null}</div>
+      <div>{error?.message ?? null}</div>
+      <div>{hash ?? null}</div>
     </div>
   );
 }
