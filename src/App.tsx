@@ -34,6 +34,14 @@ function App() {
     [isPending, account?.address, address, amount, addressError, amountError]
   );
 
+  const balance = useMemo(() => {
+    if (!addressBalance?.value) {
+      return null; 
+    }
+
+    return `Balance: ${formatEther(addressBalance?.value)} ${addressBalance?.symbol}`;
+  }, []);
+
   const onAddressChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const targetAddress = e.target.value;
     setAddress(targetAddress);
@@ -104,7 +112,7 @@ function App() {
           <input
             value={address}
             onChange={onAddressChange}
-            style={{ height: '40px', width: '100%' }}
+            style={{ height: '40px', marginTop: '10px', width: '100%' }}
             placeholder="Enter 0x Address"
           />
         </div>
@@ -119,12 +127,16 @@ function App() {
           width: '100%',
         }}
       >
-        <div>Amount</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <span>Amount</span>
+          <span>{balance}</span>
+        </div>
         <div
           style={{
             display: 'flex',
             alignItems: 'start',
             justifyItems: 'center',
+            marginTop: '10px',
             width: '100%',
           }}
         >
