@@ -80,12 +80,15 @@ function App() {
     <div
       style={{
         display: 'flex',
+        flex: "1, 0, auto",
         flexDirection: 'column',
         alignItems: 'start',
         background: '#1a1a1c',
         color: '#f8f8fb',
-        width: '400px',
-        padding: '20px',
+        minWidth: '400px',
+        maxWidth: '600px',
+        width: '100%',
+        padding: '40px',
       }}
     >
       <div
@@ -127,14 +130,14 @@ function App() {
         >
           <input
             onChange={onAmountChange}
-            style={{ height: '40px', width: '80%', marginRight: '8px' }}
+            style={{ height: '40px', width: '90%', marginRight: '8px' }}
             type="number"
             value={amount}
             placeholder="0.0"
           ></input>
           <button
             disabled={!addressBalance?.value}
-            style={{ textAlign: 'center' }}
+            style={{ textAlign: 'center', width: '10%' }}
             onClick={onMaxClick}
           >
             Max
@@ -152,7 +155,9 @@ function App() {
           {isPending ? 'Sending...' : 'Send'}
         </button>
       </div>
-      {account.isConnected ? <Account /> : <Connectors />}
+      <div style={{ marginTop: '20px', width: '100%' }}>
+        {account.isConnected ? <Account /> : <Connectors />}
+      </div>
       <div>{error?.message ?? null}</div>
       <div>{hash ?? null}</div>
     </div>

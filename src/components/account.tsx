@@ -5,7 +5,7 @@ const Account = () => {
   const { disconnect } = useDisconnect();
 
   return (
-    <div style={{ width: '100%', marginTop: '20px' }}>
+    <div style={{ marginTop: '20px', width: '100%' }}>
       <button style={{ width: '100%' }} onClick={() => disconnect()}>
         Disconnect
       </button>

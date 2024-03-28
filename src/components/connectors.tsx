@@ -4,7 +4,7 @@ const Connectors = () => {
   const { connectors, connect } = useConnect();
 
   return (
-    <div data-testid="connectors" style={{ width: '100%' }}>
+    <div data-testid="connectors">
       {connectors.map((connector) => (
         <button
           data-testid={connector.name}
