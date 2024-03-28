@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useAccount, useBalance, useGasPrice, useSendTransaction } from 'wagmi';
 import { avalancheFuji } from '@wagmi/core/chains';
 import { formatEther, isAddress, parseEther } from 'viem';
@@ -29,6 +29,11 @@ function App() {
     address: account.address,
   });
 
+  const isSendDisabled = useMemo(
+    () => isPending || !account.address || !address || !amount || !!addressError || !!amountError,
+    [isPending, account?.address, address, amount, addressError, amountError]
+  );
+
   const onAddressChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const targetAddress = e.target.value;
     setAddress(targetAddress);
@@ -38,6 +43,28 @@ function App() {
       setAddressError('');
     }
   }, []);
+
+  const onAmountChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const targetAmount = e.target.value;
+    setAmount(targetAmount);
+    if (addressBalance?.value) {
+      const balanceEtherVal = formatEther(addressBalance.value);
+      if (!!targetAmount && balanceEtherVal < targetAmount) {
+        setAmountError(
+          'Insufficient balance'
+        );
+      } else {
+        setAmountError('');
+      }
+    }
+  }, [addressBalance?.value]);
+
+  const onMaxClick = useCallback(() => {
+    if (addressBalance?.value) {
+      const etherVal = formatEther(addressBalance.value);
+      setAmount(etherVal);
+    }
+  }, [addressBalance?.value]);
 
   const onSend = useCallback(() => {
     if (isAddress(address)) {
@@ -99,20 +126,7 @@ function App() {
           }}
         >
           <input
-            onChange={(e) => {
-              const targetAmount = e.target.value;
-              setAmount(targetAmount);
-              if (addressBalance?.value) {
-                const balanceEtherVal = formatEther(addressBalance.value);
-                if (!!targetAmount && balanceEtherVal < targetAmount) {
-                  setAmountError(
-                    'Insufficient balance'
-                  );
-                } else {
-                  setAmountError('');
-                }
-              }
-            }}
+            onChange={onAmountChange}
             style={{ height: '40px', width: '80%', marginRight: '8px' }}
             type="number"
             value={amount}
@@ -121,14 +135,9 @@ function App() {
           <button
             disabled={!addressBalance?.value}
             style={{ textAlign: 'center' }}
-            onClick={() => {
-              if (addressBalance?.value) {
-                const etherVal = formatEther(addressBalance.value);
-                setAmount(etherVal);
-              }
-            }}
+            onClick={onMaxClick}
           >
-            max
+            Max
           </button>
         </div>
         <div style={{ height: '20px', color: 'red' }}>{amountError}</div>
@@ -137,7 +146,7 @@ function App() {
         <button
           data-testId="sendBtn"
           style={{ width: '100%' }}
-          disabled={isPending || !account.address || !address || !amount || !!addressError || !!amountError}
+          disabled={isSendDisabled}
           onClick={onSend}
         >
           {isPending ? 'Sending...' : 'Send'}
