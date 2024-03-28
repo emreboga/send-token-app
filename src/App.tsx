@@ -137,7 +137,7 @@ function App() {
           ></input>
           <button
             disabled={!addressBalance?.value}
-            style={{ textAlign: 'center', width: '10%' }}
+            style={{ textAlign: 'center' }}
             onClick={onMaxClick}
           >
             Max
