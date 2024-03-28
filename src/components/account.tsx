@@ -1,6 +1,6 @@
 import { useAccount, useDisconnect } from 'wagmi';
 
-export function Account() {
+const Account = () => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
 
@@ -12,4 +12,6 @@ export function Account() {
       <div style={{ width: '100%' }}>{`Connected to: ${address}`}</div>
     </div>
   );
-}
+};
+
+export default Account;

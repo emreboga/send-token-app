@@ -1,6 +1,6 @@
 import { useConnect } from 'wagmi';
 
-export function WalletOptions() {
+const Connectors = () => {
   const { connectors, connect } = useConnect();
 
   return (
@@ -18,3 +18,5 @@ export function WalletOptions() {
     </div>
   );
 }
+
+export default Connectors;

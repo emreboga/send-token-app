@@ -1,9 +1,9 @@
-import { useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import { useAccount, useBalance, useGasPrice, useSendTransaction } from 'wagmi';
-import { Account } from './account';
 import { avalancheFuji } from '@wagmi/core/chains';
-import { WalletOptions } from './wallet-options';
 import { formatEther, isAddress, parseEther } from 'viem';
+import Account from './components/account';
+import Connectors from './components/connectors';
 
 import './App.css';
 
@@ -28,6 +28,16 @@ function App() {
   const { data: addressBalance } = useBalance({
     address: account.address,
   });
+
+  const onAddressChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const targetAddress = e.target.value;
+    setAddress(targetAddress);
+    if (!!targetAddress && !isAddress(targetAddress)) {
+      setAddressError('Please enter a valid address');
+    } else {
+      setAddressError('');
+    }
+  }, []);
 
   const onSend = useCallback(() => {
     if (isAddress(address)) {
@@ -63,20 +73,7 @@ function App() {
         <div style={{ width: '100%' }}>
           <input
             value={address}
-            onChange={(e) => {
-              const targetAddress = e.target.value;
-              setAddress(targetAddress);
-              if (!!targetAddress && !isAddress(targetAddress)) {
-                setAddressError('Please enter a valid address');
-              } else {
-                setAddressError('');
-              }
-            }}
-            onBlur={() => {
-              if (!address) {
-                return;
-              }
-            }}
+            onChange={onAddressChange}
             style={{ height: '40px', width: '100%' }}
             placeholder="Enter 0x Address"
           />
@@ -146,7 +143,7 @@ function App() {
           {isPending ? 'Sending...' : 'Send'}
         </button>
       </div>
-      {account.isConnected ? <Account /> : <WalletOptions />}
+      {account.isConnected ? <Account /> : <Connectors />}
       <div>{error?.message ?? null}</div>
       <div>{hash ?? null}</div>
     </div>
