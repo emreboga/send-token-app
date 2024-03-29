@@ -1,30 +1,21 @@
-# React + TypeScript + Vite
+# Wallet Actions app
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This application provides send action for a connected (injected) wallet.
 
-Currently, two official plugins are available:
+## Running the app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```
+npm install && npm run dev
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Running tests
+
+```
+npm run test
+```
+
+## Limitations and future considerations
+- User cannot select any asset, sends using the native asset. This was a deprecation in useBalance I've discovered later in the coding and continued using native asset. I can use useReadContracts to read USDC balance in the account.
+- Limited unit testing to verify only the initial state of the app. 
+- Supports only send action of the connected Wallet.
+- No event wathcing for the transaction. This had to be dropped as I already passed 4 hours. I can use useWatchContractEvent to retrieve transfer logs for a given contract.

@@ -1,5 +1,6 @@
 import { useConnect } from 'wagmi';
 
+// Lists available connectors and provides connect action
 const Connectors = () => {
   const { connectors, connect } = useConnect();
 

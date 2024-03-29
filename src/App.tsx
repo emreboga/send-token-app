@@ -7,13 +7,15 @@ import Connectors from './components/connectors';
 
 import './App.css';
 
-function App() {
+const App = () => {
   const [address, setAddress] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
   const [addressError, setAddressError] = useState<string>('');
   const [amountError, setAmountError] = useState<string>('');
 
+  // Get connected account
   const account = useAccount();
+ 
   const {
     data: hash,
     error,
@@ -21,19 +23,23 @@ function App() {
     isPending,
   } = useSendTransaction();
 
+  // Retrieve gas price for a given chain
   const { data: gasPrice } = useGasPrice({
     chainId: avalancheFuji.id,
   });
 
+  // Retrieve address balance of the connected account
   const { data: addressBalance } = useBalance({
     address: account.address,
   });
 
+  // Conditions for the send action to be enabled/disabled
   const isSendDisabled = useMemo(
     () => isPending || !account.address || !address || !amount || !!addressError || !!amountError,
     [isPending, account?.address, address, amount, addressError, amountError]
   );
 
+  // Balance information for the connected account address
   const balance = useMemo(() => {
     if (!addressBalance?.value) {
       return null; 
@@ -42,6 +48,7 @@ function App() {
     return `Balance: ${formatUnits(addressBalance?.value, 18)} ${addressBalance?.symbol}`;
   }, []);
 
+  // Validates and handles address change 
   const onAddressChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const targetAddress = e.target.value;
     setAddress(targetAddress);
@@ -52,6 +59,7 @@ function App() {
     }
   }, []);
 
+  // Validates and handles amount change
   const onAmountChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const targetAmount = e.target.value;
     setAmount(targetAmount);
@@ -67,6 +75,7 @@ function App() {
     }
   }, [addressBalance?.value]);
 
+  // Sets the max amount available in address balance of the connected account
   const onMaxClick = useCallback(() => {
     if (addressBalance?.value) {
       const etherVal = formatUnits(addressBalance.value, 18);
@@ -74,16 +83,23 @@ function App() {
     }
   }, [addressBalance?.value]);
 
+  // Sends a transaction
   const onSend = useCallback(() => {
-    if (isAddress(address)) {
-      sendTransaction({
-        to: address,
-        value: parseUnits(amount, 18),
-        gasPrice,
-      });
+    // Send button should not be enabled when address is invalid
+    // We still check to for type integrity (never allow an invalid address in transaction body)
+    if (!isAddress(address)) {
+      setAddressError('Please enter a valid address');
+      return;
     }
+
+    sendTransaction({
+      to: address,
+      value: parseUnits(amount, 18),
+      gasPrice,
+    });
   }, [address, amount]);
 
+  // Form that contains all user fields and actions for Send operation
   const senderForm = useMemo(
     () => (
       <>
