@@ -1,7 +1,7 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useAccount, useBalance, useGasPrice, useSendTransaction } from 'wagmi';
 import { avalancheFuji } from '@wagmi/core/chains';
-import { formatUnits, isAddress, parseEther } from 'viem';
+import { formatUnits, isAddress, parseUnits } from 'viem';
 import Account from './components/account';
 import Connectors from './components/connectors';
 
@@ -78,100 +78,111 @@ function App() {
     if (isAddress(address)) {
       sendTransaction({
         to: address,
-        value: parseEther(amount),
+        value: parseUnits(amount, 18),
         gasPrice,
       });
     }
   }, [address, amount]);
 
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flex: "1, 0, auto",
-        flexDirection: 'column',
-        alignItems: 'start',
-        background: '#1a1a1c',
-        color: '#f8f8fb',
-        minWidth: '400px',
-        maxWidth: '600px',
-        width: '100%',
-        padding: '40px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'start',
-          width: '100%',
-        }}
-      >
-        <div>Send To</div>
-        <div style={{ width: '100%' }}>
-          <input
-            value={address}
-            onChange={onAddressChange}
-            style={{ height: '40px', marginTop: '10px', width: '100%' }}
-            placeholder="Enter 0x Address"
-          />
-        </div>
-        <div style={{ height: '20px', color: 'red' }}>{addressError}</div>
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'start',
-          marginTop: '20px',
-          width: '100%',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-          <span>Amount</span>
-          <span>{balance}</span>
+  const senderForm = useMemo(
+    () => (
+      <>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'start',
+            width: '100%',
+          }}
+        >
+          <div>Send To</div>
+          <div style={{ width: '100%' }}>
+            <input
+              className='input-common'
+              value={address}
+              onChange={onAddressChange}
+              style={{ marginTop: '10px', width: '100%' }}
+              placeholder="Enter 0x Address"
+            />
+          </div>
+          <div style={{ height: '20px', color: 'red' }}>{addressError}</div>
         </div>
         <div
           style={{
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'start',
-            justifyItems: 'center',
-            marginTop: '10px',
+            marginTop: '20px',
             width: '100%',
           }}
         >
-          <input
-            onChange={onAmountChange}
-            style={{ height: '40px', width: '90%', marginRight: '8px' }}
-            type="number"
-            value={amount}
-            placeholder="0.0"
-          ></input>
-          <button
-            disabled={!addressBalance?.value}
-            style={{ textAlign: 'center' }}
-            onClick={onMaxClick}
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+            <span>Amount</span>
+            <span>{balance}</span>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'start',
+              justifyItems: 'center',
+              marginTop: '10px',
+              width: '100%',
+            }}
           >
-            Max
+            <input
+              className='input-common'
+              onChange={onAmountChange}
+              style={{ width: '90%', marginRight: '8px' }}
+              type="number"
+              value={amount}
+              placeholder="0.0"
+            ></input>
+            <button
+              disabled={!addressBalance?.value}
+              style={{ textAlign: 'center' }}
+              onClick={onMaxClick}
+            >
+              Max
+            </button>
+          </div>
+          <div style={{ height: '20px', color: 'red' }}>{amountError}</div>
+        </div>
+        <div style={{ marginTop: '20px', width: '100%' }}>
+          <button
+            data-testId="sendBtn"
+            style={{ width: '100%' }}
+            disabled={isSendDisabled}
+            onClick={onSend}
+          >
+            {isPending ? 'Sending...' : 'Send'}
           </button>
         </div>
-        <div style={{ height: '20px', color: 'red' }}>{amountError}</div>
-      </div>
-      <div style={{ marginTop: '20px', width: '100%' }}>
-        <button
-          data-testId="sendBtn"
-          style={{ width: '100%' }}
-          disabled={isSendDisabled}
-          onClick={onSend}
-        >
-          {isPending ? 'Sending...' : 'Send'}
-        </button>
-      </div>
+      </>
+    ),
+    [
+      address,
+      addressBalance,
+      addressError,
+      amount,
+      amountError,
+      balance,
+      isPending,
+      isSendDisabled,
+      onAddressChange,
+      onAmountChange,
+      onMaxClick,
+      onSend,
+    ]
+  );
+
+  return (
+    <div id="appContainer">
+      {senderForm}
       <div style={{ marginTop: '20px', width: '100%' }}>
         {account.isConnected ? <Account /> : <Connectors />}
       </div>
       <div>{error?.message ?? null}</div>
-      <div>{hash ? `Last completed transaction: ${hash}` : null}</div>
+      <div>{hash ? `Last transaction: ${hash}` : null}</div>
     </div>
   );
 }
