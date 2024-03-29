@@ -1,7 +1,7 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useAccount, useBalance, useGasPrice, useSendTransaction } from 'wagmi';
 import { avalancheFuji } from '@wagmi/core/chains';
-import { formatEther, isAddress, parseEther } from 'viem';
+import { formatUnits, isAddress, parseEther } from 'viem';
 import Account from './components/account';
 import Connectors from './components/connectors';
 
@@ -39,7 +39,7 @@ function App() {
       return null; 
     }
 
-    return `Balance: ${formatEther(addressBalance?.value)} ${addressBalance?.symbol}`;
+    return `Balance: ${formatUnits(addressBalance?.value, 18)} ${addressBalance?.symbol}`;
   }, []);
 
   const onAddressChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +56,7 @@ function App() {
     const targetAmount = e.target.value;
     setAmount(targetAmount);
     if (addressBalance?.value) {
-      const balanceEtherVal = formatEther(addressBalance.value);
+      const balanceEtherVal = formatUnits(addressBalance.value, 18);
       if (!!targetAmount && balanceEtherVal < targetAmount) {
         setAmountError(
           'Insufficient balance'
@@ -69,7 +69,7 @@ function App() {
 
   const onMaxClick = useCallback(() => {
     if (addressBalance?.value) {
-      const etherVal = formatEther(addressBalance.value);
+      const etherVal = formatUnits(addressBalance.value, 18);
       setAmount(etherVal);
     }
   }, [addressBalance?.value]);
@@ -171,7 +171,7 @@ function App() {
         {account.isConnected ? <Account /> : <Connectors />}
       </div>
       <div>{error?.message ?? null}</div>
-      <div>{hash ?? null}</div>
+      <div>{hash ? `Last completed transaction: ${hash}` : null}</div>
     </div>
   );
 }

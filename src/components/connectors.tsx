@@ -4,10 +4,10 @@ const Connectors = () => {
   const { connectors, connect } = useConnect();
 
   return (
-    <div data-testid="connectors">
+    <div data-testId="connectors">
       {connectors.map((connector) => (
         <button
-          data-testid={connector.name}
+          data-testId={connector.name}
           style={{ marginTop: '20px', width: '100%' }}
           key={connector.uid}
           onClick={() => connect({ connector })}
